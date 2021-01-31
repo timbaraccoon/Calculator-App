@@ -27,7 +27,6 @@ public class CalculationServiceImpl implements CalculationService {
     public Calculation process(String expression) {
         Calculation record = createCalculation(expression);
         repository.save(record);
-
         System.out.println(record);
 
         return record;
@@ -40,13 +39,18 @@ public class CalculationServiceImpl implements CalculationService {
             return repository.findAll();
         }
         if (interval.getFrom() == null) {
-            return repository.findCalculationByTimeBefore(interval.getTo());
+            return repository.findByTimeBefore(interval.getTo());
         }
         if (interval.getTo() == null) {
-            return repository.findCalculationByTimeAfter(interval.getFrom());
+            return repository.findByTimeAfter(interval.getFrom());
         }
-        return repository.findCalculationByTimeBetween(interval.getFrom(),
+        return repository.findByTimeBetween(interval.getFrom(),
                                                         interval.getTo());
+    }
+
+    @Override
+    public List<Calculation> findByOperation(String operation) {
+        return repository.findByExpressionContainingIgnoreCase(operation);
     }
 
     private Calculation createCalculation(String expression) {

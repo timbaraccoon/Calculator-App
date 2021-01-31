@@ -15,8 +15,6 @@ public class RestCalcController {
 
     private final CalculationService calculationService;
 
-    private String expression = "-(2+2)*2"; // TODO clean up
-
     @Autowired
     public RestCalcController(CalculationService calculationService) {
         this.calculationService = calculationService;
@@ -32,6 +30,11 @@ public class RestCalcController {
         return calculationService.findAllInTimeInterval(interval);
     }
 
+    @GetMapping("/operation")
+    public List<Calculation> getListByOperation(@RequestBody String operation) {
+        return calculationService.findByOperation(operation);
+    }
+
 
 
     @GetMapping("/interval")
@@ -39,14 +42,5 @@ public class RestCalcController {
         return interval;
     }
 
-    @GetMapping("/date")
-    public TimeInterval testDateTime() {
-        return new TimeInterval(LocalDateTime.now(), LocalDateTime.MAX);
-    }
-
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void someTestStuff() {
-//        System.out.println(calculationService.process(expression));
-//    }
 
 }

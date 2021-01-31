@@ -11,4 +11,6 @@ public interface CalculationService {
 
     List<Calculation> findAllInTimeInterval(TimeInterval interval);
 
+    List<Calculation> findByOperation(String operation);
+
 }

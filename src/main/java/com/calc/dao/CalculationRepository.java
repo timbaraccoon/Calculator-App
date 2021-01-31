@@ -8,8 +8,12 @@ import java.util.List;
 
 public interface CalculationRepository extends JpaRepository<Calculation, Long> {
 
-    List<Calculation> findCalculationByTimeBetween(LocalDateTime from, LocalDateTime to);
-    List<Calculation> findCalculationByTimeAfter(LocalDateTime from);
-    List<Calculation> findCalculationByTimeBefore(LocalDateTime to);
+    List<Calculation> findByTimeBetween(LocalDateTime from, LocalDateTime to);
+
+    List<Calculation> findByTimeAfter(LocalDateTime from);
+
+    List<Calculation> findByTimeBefore(LocalDateTime to);
+
+    List<Calculation> findByExpressionContainingIgnoreCase(String operation);
 
 }
