@@ -1,6 +1,9 @@
-package com.calc.service;
+package com.calc.service.components;
 
-public class EvaluateExpressionServiceImpl implements EvaluateExpressionService {
+import org.springframework.stereotype.Service;
+
+@Service
+public class ExpressionEvaluatorImpl implements ExpressionEvaluator {
 
     @Override
     public Double evaluate(String str) {
