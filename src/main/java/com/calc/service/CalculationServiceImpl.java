@@ -56,7 +56,7 @@ public class CalculationServiceImpl implements CalculationService {
     private Calculation createCalculation(String expression) {
         Calculation record = new Calculation();
         record.setExpression(expression);
-        record.setResult(BigDecimal.valueOf(expressionEvaluator.evaluate(expression)));
+        record.setResult(expressionEvaluator.evaluate(expression));
         record.setTime(LocalDateTime.now());
 
         return record;

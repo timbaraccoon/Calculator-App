@@ -2,11 +2,15 @@ package com.calc.service.components;
 
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 @Service
 public class ExpressionEvaluatorImpl implements ExpressionEvaluator {
 
     @Override
-    public Double evaluate(String str) {
+    public BigDecimal evaluate(final String str) {
         return new Object() {
             int pos = -1, ch;
 
@@ -23,9 +27,9 @@ public class ExpressionEvaluatorImpl implements ExpressionEvaluator {
                 return false;
             }
 
-            double parse() {
+            BigDecimal parse() {
                 nextChar();
-                double x = parseExpression();
+                BigDecimal x = parseExpression();
                 if (pos < str.length()) throw new RuntimeException("Unexpected: " + (char)ch);
                 return x;
             }
@@ -36,55 +40,50 @@ public class ExpressionEvaluatorImpl implements ExpressionEvaluator {
             // factor = `+` factor | `-` factor | `(` expression `)`
             //        | number | functionName factor | factor `^` factor
 
-            double parseExpression() {
-                double x = parseTerm();
+            BigDecimal parseExpression() {
+                BigDecimal x = parseTerm();
                 for (;;) {
-                    if      (eat('+')) x += parseTerm(); // addition
-                    else if (eat('-')) x -= parseTerm(); // subtraction
+                    if      (eat('+')) x = x.add(parseTerm()); // addition
+                    else if (eat('-')) x = x.add(parseTerm().negate()); // subtraction
                     else return x;
                 }
             }
 
-            double parseTerm() {
-                double x = parseFactor();
+            BigDecimal parseTerm() {
+                BigDecimal x = parseFactor();
                 for (;;) {
-                    if      (eat('*')) x *= parseFactor(); // multiplication
-                    else if (eat('/')) x /= parseFactor(); // division
+                    if      (eat('*')) x = x.multiply(parseFactor()); // multiplication
+                    else if (eat('/')) x = x.divide(parseFactor(), RoundingMode.HALF_UP); // division
                     else return x;
                 }
             }
 
-            double parseFactor() {
+            BigDecimal parseFactor() {
                 if (eat('+')) return parseFactor(); // unary plus
-                if (eat('-')) return -parseFactor(); // unary minus
+                if (eat('-')) return parseFactor().negate(); // unary minus
 
-                double x;
+                BigDecimal x = new BigDecimal(0);
                 int startPos = this.pos;
-
                 if (eat('(')) { // parentheses
                     x = parseExpression();
                     eat(')');
-
                 } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
                     while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
-                    x = Double.parseDouble(str.substring(startPos, this.pos));
-
+                    x = new BigDecimal(str.substring(startPos, this.pos));
                 } else if (ch >= 'a' && ch <= 'z') { // functions
                     while (ch >= 'a' && ch <= 'z') nextChar();
                     String func = str.substring(startPos, this.pos);
                     x = parseFactor();
-                    x = switch (func) {
-                        case "sqrt" -> Math.sqrt(x);
-                        case "sin" -> Math.sin(Math.toRadians(x));
-                        case "cos" -> Math.cos(Math.toRadians(x));
-                        case "tan" -> Math.tan(Math.toRadians(x));
-                        default -> throw new RuntimeException("Unknown function: " + func);
-                    };
+                    if (func.equals("sqrt")) x = x.sqrt(MathContext.DECIMAL64);
+//                    else if (func.equals("sin")) x = Math.sin(Math.toRadians(x));
+//                    else if (func.equals("cos")) x = Math.cos(Math.toRadians(x));
+//                    else if (func.equals("tan")) x = Math.tan(Math.toRadians(x));
+                    else throw new RuntimeException("Unknown function: " + func);
                 } else {
                     throw new RuntimeException("Unexpected: " + (char)ch);
                 }
 
-                if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
+                if (eat('^')) x = x.pow(parseFactor().intValue()); // exponentiation
 
                 return x;
             }

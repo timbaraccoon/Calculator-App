@@ -6,7 +6,6 @@ import com.calc.service.CalculationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -20,7 +19,7 @@ public class RestCalcController {
         this.calculationService = calculationService;
     }
 
-    @PostMapping("/calculate")
+    @PostMapping("/calculate/")
     public Calculation processExpression(@RequestBody String expression) {
         return calculationService.process(expression);
     }
@@ -41,6 +40,5 @@ public class RestCalcController {
     public TimeInterval getInterval(@RequestBody TimeInterval interval) {
         return interval;
     }
-
 
 }

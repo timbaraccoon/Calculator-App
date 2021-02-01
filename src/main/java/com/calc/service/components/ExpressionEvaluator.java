@@ -1,7 +1,9 @@
 package com.calc.service.components;
 
+import java.math.BigDecimal;
+
 public interface ExpressionEvaluator {
 
-    Double evaluate(String Expression);
+    BigDecimal evaluate(String Expression);
 
 }
