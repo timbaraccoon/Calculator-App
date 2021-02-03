@@ -19,7 +19,7 @@ public class RestCalcController {
         this.calculationService = calculationService;
     }
 
-    @PostMapping("/calculate/")
+    @PostMapping("/calculate")
     public Calculation processExpression(@RequestBody String expression) {
         return calculationService.process(expression);
     }
@@ -33,12 +33,4 @@ public class RestCalcController {
     public List<Calculation> getListByOperation(@RequestBody String operation) {
         return calculationService.findByOperation(operation);
     }
-
-
-
-    @GetMapping("/interval")
-    public TimeInterval getInterval(@RequestBody TimeInterval interval) {
-        return interval;
-    }
-
 }

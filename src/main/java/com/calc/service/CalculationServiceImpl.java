@@ -3,7 +3,7 @@ package com.calc.service;
 import com.calc.controller.dto.TimeInterval;
 import com.calc.dao.CalculationRepository;
 import com.calc.entity.Calculation;
-import com.calc.service.components.ExpressionEvaluator;
+import com.calc.service.components.ExpressionProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +14,14 @@ import java.util.List;
 public class CalculationServiceImpl implements CalculationService {
 
     private final CalculationRepository repository;
-    private final ExpressionEvaluator expressionEvaluator;
+    private final ExpressionProcessor expressionProcessor;
 
     @Autowired
-    public CalculationServiceImpl(CalculationRepository repository, ExpressionEvaluator expressionEvaluator) {
+    public CalculationServiceImpl(CalculationRepository repository,
+                                  ExpressionProcessor expressionProcessor) {
         this.repository = repository;
-        this.expressionEvaluator = expressionEvaluator;
+        this.expressionProcessor = expressionProcessor;
     }
-
-
-
 
     @Override
     public Calculation process(String expression) {
@@ -46,8 +44,7 @@ public class CalculationServiceImpl implements CalculationService {
         if (interval.getTo() == null) {
             return repository.findByTimeAfter(interval.getFrom());
         }
-        return repository.findByTimeBetween(interval.getFrom(),
-                                                        interval.getTo());
+        return repository.findByTimeBetween(interval.getFrom(), interval.getTo());
     }
 
     @Override
@@ -58,7 +55,7 @@ public class CalculationServiceImpl implements CalculationService {
     private Calculation createCalculation(String expression) {
         Calculation record = new Calculation();
         record.setExpression(expression);
-        record.setResult(expressionEvaluator.evaluate(expression));
+        record.setResult(expressionProcessor.process(expression));
         record.setTime(LocalDateTime.now());
 
         return record;

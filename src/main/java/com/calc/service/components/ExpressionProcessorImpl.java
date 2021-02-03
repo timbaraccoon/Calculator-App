@@ -1,6 +1,6 @@
 package com.calc.service.components;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -9,11 +9,11 @@ import java.math.RoundingMode;
 import static ch.obermuhlner.math.big.DefaultBigDecimalMath.cos;
 import static ch.obermuhlner.math.big.DefaultBigDecimalMath.sin;
 
-@Service
-public class ExpressionEvaluatorImpl implements ExpressionEvaluator {
+@Component
+public class ExpressionProcessorImpl implements ExpressionProcessor {
 
     @Override
-    public BigDecimal evaluate(final String str) {
+    public BigDecimal process(final String str) {
         return new Object() {
             int pos = -1, ch;
 
@@ -59,7 +59,7 @@ public class ExpressionEvaluatorImpl implements ExpressionEvaluator {
                 if (read('+')) return parseFactor(); // unary plus
                 if (read('-')) return parseFactor().negate(); // unary minus
 
-                BigDecimal x = new BigDecimal(0);
+                BigDecimal x;
                 int startPos = this.pos;
                 if (read('(')) { // parentheses
                     x = parseExpression();
